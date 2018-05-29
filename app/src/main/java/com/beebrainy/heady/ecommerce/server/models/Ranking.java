@@ -11,6 +11,12 @@ public class Ranking extends RealmObject {
     String title;
     RealmList<Product> products;
 
+    public Ranking(long id, String title, RealmList<Product> products) {
+        this.id = id;
+        this.title = title;
+        this.products = products;
+    }
+
     public long getId() {
         return id;
     }

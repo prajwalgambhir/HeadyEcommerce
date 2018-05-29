@@ -10,6 +10,12 @@ public class Tax extends RealmObject {
     String name;
     Double value;
 
+    public Tax(long id, String name, Double value) {
+        this.id = id;
+        this.name = name;
+        this.value = value;
+    }
+
     public long getId() {
         return id;
     }

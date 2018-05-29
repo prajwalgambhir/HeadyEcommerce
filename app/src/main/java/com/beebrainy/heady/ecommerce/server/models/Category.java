@@ -12,6 +12,14 @@ public class Category extends RealmObject {
     RealmList<Category> subCategories;
     RealmList<Product> products;
 
+    public Category(long id, String name, RealmList<Category> subCategories, RealmList<Product>
+            products) {
+        this.id = id;
+        this.name = name;
+        this.subCategories = subCategories;
+        this.products = products;
+    }
+
     public long getId() {
         return id;
     }

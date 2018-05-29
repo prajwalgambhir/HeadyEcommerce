@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".client.activities.CategoryListActivity">
+        </activity>
+        <activity android:name=".client.activities.ProductListActivity">
+        </activity>
     </application>
 
 </manifest>

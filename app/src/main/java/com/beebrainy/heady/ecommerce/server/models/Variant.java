@@ -11,6 +11,13 @@ public class Variant extends RealmObject {
     Integer size;
     Integer price;
 
+    public Variant(long id, String color, Integer size, Integer price) {
+        this.id = id;
+        this.color = color;
+        this.size = size;
+        this.price = price;
+    }
+
     public long getId() {
         return id;
     }

@@ -18,6 +18,18 @@ public class Product extends RealmObject {
     RealmList<Variant> variants;
     Tax tax;
 
+    public Product(long id, String name, Date dateAdded, Long viewCount, Long orderCount, Long
+            shareCount, RealmList<Variant> variants, Tax tax) {
+        this.id = id;
+        this.name = name;
+        this.dateAdded = dateAdded;
+        this.viewCount = viewCount;
+        this.orderCount = orderCount;
+        this.shareCount = shareCount;
+        this.variants = variants;
+        this.tax = tax;
+    }
+
     public long getId() {
         return id;
     }
