@@ -1,4 +1,4 @@
-package com.beebrainy.heady.ecommerce.server.service.network;
+package com.beebrainy.heady.ecommerce.server.services.network;
 
 public interface INetworkService {
 

@@ -6,7 +6,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Product extends RealmObject {
+public class ProductEntity extends RealmObject {
 
     @PrimaryKey
     long id;
@@ -15,19 +15,22 @@ public class Product extends RealmObject {
     Long viewCount;
     Long orderCount;
     Long shareCount;
-    RealmList<Variant> variants;
-    Tax tax;
+    RealmList<VariantEntity> variantEntities;
+    TaxEntity taxEntity;
 
-    public Product(long id, String name, Date dateAdded, Long viewCount, Long orderCount, Long
-            shareCount, RealmList<Variant> variants, Tax tax) {
+    public ProductEntity() {
+    }
+
+    public ProductEntity(long id, String name, Date dateAdded, Long viewCount, Long orderCount, Long
+            shareCount, RealmList<VariantEntity> variantEntities, TaxEntity taxEntity) {
         this.id = id;
         this.name = name;
         this.dateAdded = dateAdded;
         this.viewCount = viewCount;
         this.orderCount = orderCount;
         this.shareCount = shareCount;
-        this.variants = variants;
-        this.tax = tax;
+        this.variantEntities = variantEntities;
+        this.taxEntity = taxEntity;
     }
 
     public long getId() {
@@ -78,19 +81,19 @@ public class Product extends RealmObject {
         this.shareCount = shareCount;
     }
 
-    public RealmList<Variant> getVariants() {
-        return variants;
+    public RealmList<VariantEntity> getVariantEntities() {
+        return variantEntities;
     }
 
-    public void setVariants(RealmList<Variant> variants) {
-        this.variants = variants;
+    public void setVariantEntities(RealmList<VariantEntity> variantEntities) {
+        this.variantEntities = variantEntities;
     }
 
-    public Tax getTax() {
-        return tax;
+    public TaxEntity getTaxEntity() {
+        return taxEntity;
     }
 
-    public void setTax(Tax tax) {
-        this.tax = tax;
+    public void setTaxEntity(TaxEntity taxEntity) {
+        this.taxEntity = taxEntity;
     }
 }

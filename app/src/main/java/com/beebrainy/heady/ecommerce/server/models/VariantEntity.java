@@ -3,7 +3,7 @@ package com.beebrainy.heady.ecommerce.server.models;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Variant extends RealmObject {
+public class VariantEntity extends RealmObject {
 
     @PrimaryKey
     long id;
@@ -11,7 +11,10 @@ public class Variant extends RealmObject {
     Integer size;
     Integer price;
 
-    public Variant(long id, String color, Integer size, Integer price) {
+    public VariantEntity() {
+    }
+
+    public VariantEntity(long id, String color, Integer size, Integer price) {
         this.id = id;
         this.color = color;
         this.size = size;

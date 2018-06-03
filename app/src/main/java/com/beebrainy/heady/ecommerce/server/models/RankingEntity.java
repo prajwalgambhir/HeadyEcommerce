@@ -4,17 +4,20 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Ranking extends RealmObject {
+public class RankingEntity extends RealmObject {
 
     @PrimaryKey
     long id;
     String title;
-    RealmList<Product> products;
+    RealmList<ProductEntity> productEntities;
 
-    public Ranking(long id, String title, RealmList<Product> products) {
+    public RankingEntity() {
+    }
+
+    public RankingEntity(long id, String title, RealmList<ProductEntity> productEntities) {
         this.id = id;
         this.title = title;
-        this.products = products;
+        this.productEntities = productEntities;
     }
 
     public long getId() {
@@ -33,11 +36,11 @@ public class Ranking extends RealmObject {
         this.title = title;
     }
 
-    public RealmList<Product> getProducts() {
-        return products;
+    public RealmList<ProductEntity> getProductEntities() {
+        return productEntities;
     }
 
-    public void setProducts(RealmList<Product> products) {
-        this.products = products;
+    public void setProductEntities(RealmList<ProductEntity> productEntities) {
+        this.productEntities = productEntities;
     }
 }
