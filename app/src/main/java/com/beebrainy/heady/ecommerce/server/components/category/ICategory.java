@@ -13,4 +13,6 @@ public interface ICategory {
     CategoryEntity getCategory(long id);
 
     List<CategoryEntity> getSubCategory(long pCategoryId);
+
+    void deleteCategory(long id);
 }

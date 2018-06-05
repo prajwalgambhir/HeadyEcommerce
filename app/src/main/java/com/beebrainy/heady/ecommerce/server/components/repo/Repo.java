@@ -19,12 +19,35 @@ public class Repo implements IRepo {
         return realm.where(CategoryEntity.class).findAll();
     }
 
+    @Override
+    public RealmResults<CategoryEntity> getCategories(List<Long> ids) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<CategoryEntity> query = realm.where(CategoryEntity.class);
+        for (Long id : ids) {
+            query.equalTo("id", id);
+        }
+        RealmResults<CategoryEntity> realmResults = query.findAll();
+        realm.close();
+        return realmResults;
+    }
+
     public CategoryEntity getCategory(long id) {
         Realm realm = Realm.getDefaultInstance();
         CategoryEntity categoryEntity = realm.where(CategoryEntity.class).equalTo("id", id)
                 .findFirst();
         realm.close();
         return categoryEntity;
+    }
+
+    @Override
+    public void deleteCategory(long id) {
+        Realm realm = Realm.getDefaultInstance();
+        CategoryEntity ce = realm.where(CategoryEntity.class).equalTo("id", id).findFirst();
+        if (ce != null) {
+            realm.beginTransaction();
+            ce.deleteFromRealm();
+            realm.commitTransaction();
+        }
     }
 
     @Override
@@ -67,7 +90,6 @@ public class Repo implements IRepo {
     @Override
     public void addRanking(final RankingEntity rankingEntity) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -105,20 +127,35 @@ public class Repo implements IRepo {
 
     }
 
-    public void addChildCategory(final long parentId, final List<Long> childIds) {
+//    public void addChildCategory(final long parentId, final List<Long> childIds) {
+//        Realm realm = Realm.getDefaultInstance();
+//        realm.executeTransactionAsync(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                CategoryEntity categoryEntity = realm.where(CategoryEntity.class).equalTo("id",
+//                        parentId).findFirst();
+//                RealmQuery<CategoryEntity> query = realm.where(CategoryEntity.class);
+//                for (Long childId : childIds) {
+//                    query.equalTo("id", childId);
+//                }
+//                RealmResults<CategoryEntity> childCategories = query.findAll();
+//                categoryEntity.getSubCategories().addAll(childCategories);
+//                realm.close();
+//            }
+//        });
+//    }
+
+    @Override
+    public void addChildCategory(final long parentId, final List<CategoryEntity> childCategories) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                CategoryEntity categoryEntity = realm.where(CategoryEntity.class).equalTo("id",
+                CategoryEntity parentCE = realm.where(CategoryEntity.class).equalTo("id",
                         parentId).findFirst();
-                RealmQuery<CategoryEntity> query = realm.where(CategoryEntity.class);
-                for (Long childId : childIds) {
-                    query.equalTo("id", childId);
+                if (parentCE != null) {
+                    parentCE.setSubCategories((RealmList<CategoryEntity>) childCategories);
                 }
-                RealmResults<CategoryEntity> childCategories = query.findAll();
-                categoryEntity.getSubCategories().addAll(childCategories);
-                realm.close();
             }
         });
     }

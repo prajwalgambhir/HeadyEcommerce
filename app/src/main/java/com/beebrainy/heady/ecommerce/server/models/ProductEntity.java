@@ -15,14 +15,15 @@ public class ProductEntity extends RealmObject {
     Long viewCount;
     Long orderCount;
     Long shareCount;
-    RealmList<VariantEntity> variantEntities;
+    RealmList<VariantEntity> variantEntities = new RealmList<>();
     TaxEntity taxEntity;
 
     public ProductEntity() {
     }
 
-    public ProductEntity(long id, String name, Date dateAdded, Long viewCount, Long orderCount, Long
-            shareCount, RealmList<VariantEntity> variantEntities, TaxEntity taxEntity) {
+    public ProductEntity(long id, String name, Date dateAdded, Long viewCount, Long orderCount,
+                         Long shareCount, RealmList<VariantEntity> variantEntities, TaxEntity
+                                 taxEntity) {
         this.id = id;
         this.name = name;
         this.dateAdded = dateAdded;

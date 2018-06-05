@@ -9,7 +9,7 @@ public class RankingEntity extends RealmObject {
     @PrimaryKey
     long id;
     String title;
-    RealmList<ProductEntity> productEntities;
+    RealmList<ProductEntity> productEntities = new RealmList<>();
 
     public RankingEntity() {
     }

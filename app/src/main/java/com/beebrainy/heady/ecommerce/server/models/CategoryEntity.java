@@ -7,15 +7,23 @@ import io.realm.annotations.PrimaryKey;
 public class CategoryEntity extends RealmObject {
 
     @PrimaryKey
-    long id;
-    String name;
-    RealmList<CategoryEntity> subCategories;
-    RealmList<ProductEntity> productEntities;
+    private long id;
+    private String name;
+    private RealmList<CategoryEntity> subCategories = new RealmList<>();
+    private RealmList<ProductEntity> productEntities = new RealmList<>();
 
     public CategoryEntity() {
     }
 
-    public CategoryEntity(long id, String name, RealmList<CategoryEntity> subCategories, RealmList<ProductEntity> productEntities) {
+    public CategoryEntity(CategoryEntity copy) {
+        setId(copy.getId());
+        setName(copy.getName());
+        setSubCategories(copy.getSubCategories());
+        setProductEntities(copy.getProductEntities());
+    }
+
+    public CategoryEntity(long id, String name, RealmList<CategoryEntity> subCategories,
+                          RealmList<ProductEntity> productEntities) {
         this.id = id;
         this.name = name;
         this.subCategories = subCategories;

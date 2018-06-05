@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.beebrainy.heady.ecommerce">
 
-    <uses-permission android:name="android.permission.INTERNET"/>X
+    <uses-permission android:name="android.permission.INTERNET"/>
+    X
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,6 +21,8 @@
         <activity android:name=".client.activities.CategoryListActivity">
         </activity>
         <activity android:name=".client.activities.ProductListActivity">
+        </activity>
+        <activity android:name=".client.activities.RankingActivity">
         </activity>
     </application>
 

@@ -2,9 +2,14 @@ package com.beebrainy.heady.ecommerce.server.components.ranking;
 
 import com.beebrainy.heady.ecommerce.server.models.RankingEntity;
 
-import java.util.List;
+import java.util.Map;
 
 public interface IRanking {
 
-    void addRanking(RankingEntity rankingEntity, List<Long> productIds);
+
+    /**
+     * @param rankingEntity
+     * @param mapProductIdCount @key - ProductId,@value - count
+     */
+    void addRanking(RankingEntity rankingEntity, Map<Long, Long> mapProductIdCount);
 }
