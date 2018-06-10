@@ -17,6 +17,8 @@ public interface IRepo {
 
     RealmResults<CategoryEntity> getCategories(List<Long> ids);
 
+    RealmResults<CategoryEntity> getMainCategories();
+
     CategoryEntity getCategory(long id);
 
     void deleteCategory(long id);
@@ -29,9 +31,13 @@ public interface IRepo {
 
     RealmResults<RankingEntity> getRankings();
 
+    RankingEntity getRanking(long rankId);
+
     void addRanking(RankingEntity rankingEntity);
 
 //    void addChildCategory(long parentId, List<Long> childIds);
+
+    void addProduct(long categoryId, ProductEntity productEntity);
 
     void addChildCategory(long parentId, List<CategoryEntity> childCategories);
 }

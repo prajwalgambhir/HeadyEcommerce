@@ -1,5 +1,7 @@
 package com.beebrainy.heady.ecommerce.server.components.repo;
 
+import android.util.Log;
+
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 import com.beebrainy.heady.ecommerce.server.models.ProductEntity;
 import com.beebrainy.heady.ecommerce.server.models.RankingEntity;
@@ -27,35 +29,46 @@ public class Repo implements IRepo {
             query.equalTo("id", id);
         }
         RealmResults<CategoryEntity> realmResults = query.findAll();
-        realm.close();
         return realmResults;
+    }
+
+    @Override
+    public RealmResults<CategoryEntity> getMainCategories() {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.where(CategoryEntity.class).isNotEmpty("subCategories").findAll();
     }
 
     public CategoryEntity getCategory(long id) {
         Realm realm = Realm.getDefaultInstance();
         CategoryEntity categoryEntity = realm.where(CategoryEntity.class).equalTo("id", id)
                 .findFirst();
-        realm.close();
         return categoryEntity;
     }
 
     @Override
     public void deleteCategory(long id) {
         Realm realm = Realm.getDefaultInstance();
-        CategoryEntity ce = realm.where(CategoryEntity.class).equalTo("id", id).findFirst();
+        final CategoryEntity ce = realm.where(CategoryEntity.class).equalTo("id", id).findFirst();
+        Log.d(Repo.class.getSimpleName(), "Cat deletion:" + ce);
         if (ce != null) {
             realm.beginTransaction();
-            ce.deleteFromRealm();
-            realm.commitTransaction();
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    ce.deleteFromRealm();
+                    Log.d(Repo.class.getSimpleName(), "Success");
+                }
+            });
+        } else {
+            Log.d(Repo.class.getSimpleName(), "Fail");
         }
     }
 
     @Override
     public RealmList<CategoryEntity> getSubCategories(long categoryId) {
         Realm realm = Realm.getDefaultInstance();
-        RealmList<CategoryEntity> categoryEntities = realm.where(CategoryEntity.class).and()
-                .equalTo("id", categoryId).findFirst().getSubCategories();
-        realm.close();
+        RealmList<CategoryEntity> categoryEntities = realm.where(CategoryEntity.class).equalTo
+                ("id", categoryId).findFirst().getSubCategories();
         return categoryEntities;
     }
 
@@ -64,7 +77,6 @@ public class Repo implements IRepo {
         Realm realm = Realm.getDefaultInstance();
         RealmList<ProductEntity> productEntities = realm.where(CategoryEntity.class).equalTo
                 ("id", categoryId).findFirst().getProductEntities();
-        realm.close();
         return productEntities;
     }
 
@@ -73,9 +85,8 @@ public class Repo implements IRepo {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<ProductEntity> query = realm.where(ProductEntity.class);
         for (Long prodId : productIds) {
-            query.equalTo("id", prodId);
+            query.equalTo("id", prodId).or();
         }
-        realm.close();
         return query.findAll();
     }
 
@@ -83,34 +94,33 @@ public class Repo implements IRepo {
     public RealmResults<RankingEntity> getRankings() {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<RankingEntity> rankingEntity = realm.where(RankingEntity.class).findAll();
-        realm.close();
         return rankingEntity;
+    }
+
+    @Override
+    public RankingEntity getRanking(long rankId) {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.where(RankingEntity.class).equalTo("id", rankId).findFirst();
     }
 
     @Override
     public void addRanking(final RankingEntity rankingEntity) {
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealm(rankingEntity);
-                realm.close();
-            }
-        });
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(rankingEntity);
+        realm.commitTransaction();
     }
 
+    @Override
     public void addCategory(final CategoryEntity categoryEntity) {
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealm(categoryEntity);
-                realm.close();
-            }
-        });
-
+        realm.beginTransaction();
+        realm.copyToRealm(categoryEntity);
+        Log.d(Repo.class.getSimpleName(), "Cat added:" + categoryEntity);
+        realm.commitTransaction();
     }
 
+    @Override
     public void addProduct(final long categoryId, final ProductEntity productEntity) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(new Realm.Transaction() {
@@ -121,42 +131,21 @@ public class Repo implements IRepo {
                 if (categoryEntity != null) {
                     categoryEntity.getProductEntities().add(productEntity);
                 }
-                realm.close();
             }
         });
 
     }
 
-//    public void addChildCategory(final long parentId, final List<Long> childIds) {
-//        Realm realm = Realm.getDefaultInstance();
-//        realm.executeTransactionAsync(new Realm.Transaction() {
-//            @Override
-//            public void execute(Realm realm) {
-//                CategoryEntity categoryEntity = realm.where(CategoryEntity.class).equalTo("id",
-//                        parentId).findFirst();
-//                RealmQuery<CategoryEntity> query = realm.where(CategoryEntity.class);
-//                for (Long childId : childIds) {
-//                    query.equalTo("id", childId);
-//                }
-//                RealmResults<CategoryEntity> childCategories = query.findAll();
-//                categoryEntity.getSubCategories().addAll(childCategories);
-//                realm.close();
-//            }
-//        });
-//    }
 
     @Override
     public void addChildCategory(final long parentId, final List<CategoryEntity> childCategories) {
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                CategoryEntity parentCE = realm.where(CategoryEntity.class).equalTo("id",
-                        parentId).findFirst();
-                if (parentCE != null) {
-                    parentCE.setSubCategories((RealmList<CategoryEntity>) childCategories);
-                }
-            }
-        });
+        realm.beginTransaction();
+        CategoryEntity parentCE = realm.where(CategoryEntity.class).equalTo("id", parentId)
+                .findFirst();
+        if (parentCE != null) {
+            parentCE.getSubCategories().addAll(childCategories);
+        }
+        realm.commitTransaction();
     }
 }

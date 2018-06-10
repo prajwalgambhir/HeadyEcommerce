@@ -97,4 +97,12 @@ public class ProductEntity extends RealmObject {
     public void setTaxEntity(TaxEntity taxEntity) {
         this.taxEntity = taxEntity;
     }
+
+    @Override
+    public String toString() {
+        return "ProductEntity{" + "id=" + id + ", name='" + name + '\'' + ", dateAdded=" +
+                dateAdded + ", viewCount=" + viewCount + ", orderCount=" + orderCount + ", " +
+                "shareCount=" + shareCount + ", variantEntities=" + variantEntities + ", " +
+                "taxEntity=" + taxEntity + '}';
+    }
 }

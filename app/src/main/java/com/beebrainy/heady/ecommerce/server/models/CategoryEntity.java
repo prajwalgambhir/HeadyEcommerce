@@ -61,4 +61,10 @@ public class CategoryEntity extends RealmObject {
     public void setProductEntities(RealmList<ProductEntity> productEntities) {
         this.productEntities = productEntities;
     }
+
+    @Override
+    public String toString() {
+        return "CategoryEntity{" + "id=" + id + ", name='" + name + '\'' + ", subCategories=" +
+                subCategories + ", productEntities=" + productEntities + '}';
+    }
 }

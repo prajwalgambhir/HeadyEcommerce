@@ -43,4 +43,10 @@ public class RankingEntity extends RealmObject {
     public void setProductEntities(RealmList<ProductEntity> productEntities) {
         this.productEntities = productEntities;
     }
+
+    @Override
+    public String toString() {
+        return "RankingEntity{" + "id=" + id + ", title='" + title + '\'' + ", productEntities="
+                + productEntities + '}';
+    }
 }

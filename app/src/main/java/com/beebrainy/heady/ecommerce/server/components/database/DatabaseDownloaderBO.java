@@ -33,9 +33,9 @@ import io.realm.RealmList;
 
 public class DatabaseDownloaderBO implements IDatabaseDownloader {
 
-    Context context;
+    private Context context;
 
-    CallbackResponse callbackResponse = new CallbackResponse<String>() {
+    private CallbackResponse callbackResponse = new CallbackResponse<String>() {
         @Override
         public void onResponse(String str) {
             try {
@@ -49,7 +49,7 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
                     JSONArray jaProducts = joCategory.getJSONArray("products");
                     JSONArray jaChildCategory = joCategory.getJSONArray("child_categories");
                     if (jaProducts.length() > 0) {
-                        List<ProductEntity> prods = new ArrayList<>();
+                        RealmList<ProductEntity> prods = new RealmList<>();
                         for (int j = 0; j < jaProducts.length(); j++) {
                             JSONObject joProduct = jaProducts.getJSONObject(j);
                             ProductEntity p = productFromJson(joProduct);
@@ -65,6 +65,7 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
                             p.setVariantEntities(variantEntities);
                             prods.add(p);
                         }
+                        categoryEntity.setProductEntities(prods);
                     }
                     addCategory(categoryEntity);
                     if (jaChildCategory.length() > 0) {
@@ -115,7 +116,6 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
     }
 
     private void addChildCategory(long parentId, JSONArray jaChildIds) throws JSONException {
-        //call bo add child category
         List<Long> childIds = new ArrayList<>(jaChildIds.length());
         for (int i = 0; i < jaChildIds.length(); i++) {
             childIds.add(jaChildIds.getLong(i));
@@ -156,7 +156,8 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
         p.setId(joProduct.getInt("id"));
         p.setName(joProduct.getString("name"));
         String dateStr = joProduct.getString("date_added");
-        Log.d(DatabaseDownloaderBO.class.getSimpleName(), joProduct.getString("name") + " " + dateStr);
+        Log.d(DatabaseDownloaderBO.class.getSimpleName(), joProduct.getString("name") + " " +
+                dateStr);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         p.setDateAdded(sf.parse(dateStr.replaceAll("Z$", "+0000")));
         return p;

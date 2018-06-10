@@ -4,8 +4,9 @@ import com.beebrainy.heady.ecommerce.server.components.repo.IRepo;
 import com.beebrainy.heady.ecommerce.server.components.repo.Repo;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.RealmList;
 
 public class CategoryBO implements ICategory {
 
@@ -19,19 +20,27 @@ public class CategoryBO implements ICategory {
     public void addSubCategory(long parentId, List<Long> childIds) {
         IRepo repo = new Repo();
         List<CategoryEntity> dupSubCategories = repo.getCategories(childIds);
-        List<CategoryEntity> subCat = new ArrayList<>(dupSubCategories.size());
-        for (CategoryEntity ce : dupSubCategories) {
-            CategoryEntity categoryEntity = new CategoryEntity(ce);
-            subCat.add(categoryEntity);
-            repo.deleteCategory(ce.getId());
-        }
-        repo.addChildCategory(parentId, subCat);
+        repo.addChildCategory(parentId, dupSubCategories);
+    }
+
+    @Override
+    public List<CategoryEntity> getCategories() {
+        IRepo repo = new Repo();
+        return repo.getCategories();
     }
 
     @Override
     public CategoryEntity getCategory(long id) {
         IRepo repo = new Repo();
         return repo.getCategory(id);
+    }
+
+    @Override
+    public RealmList<CategoryEntity> getMainCategories() {
+        IRepo repo = new Repo();
+        RealmList<CategoryEntity> mainCategories = new RealmList<>();
+        mainCategories.addAll(repo.getMainCategories());
+        return mainCategories;
     }
 
     @Override
