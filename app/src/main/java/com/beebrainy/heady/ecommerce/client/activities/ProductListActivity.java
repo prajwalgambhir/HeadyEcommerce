@@ -19,6 +19,7 @@ import com.beebrainy.heady.ecommerce.server.models.ProductEntity;
 import com.beebrainy.heady.ecommerce.server.models.RankingEntity;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProductListActivity extends AppCompatActivity {
@@ -73,7 +74,28 @@ public class ProductListActivity extends AppCompatActivity {
             IRanking ranking = new RankingBO();
             RankingEntity re = ranking.getRankingEntity(rankId);
             productEntities.addAll(re.getProductEntities());
+            sortProductsBy(re.getTitle());
         }
+    }
+
+    private void sortProductsBy(final String title) {
+        productEntities.sort(new Comparator<ProductEntity>() {
+            @Override
+            public int compare(ProductEntity o1, ProductEntity o2) {
+                switch (title) {
+                    case "Most Viewed Products": {
+                        return o2.getViewCount().compareTo(o1.getViewCount());
+                    }
+                    case "Most OrdeRed Products": {
+                        return o2.getOrderCount().compareTo(o1.getOrderCount());
+                    }
+                    case "Most ShaRed Products": {
+                        return o2.getShareCount().compareTo(o1.getShareCount());
+                    }
+                }
+                return 0;
+            }
+        });
     }
 
     private void onProductSelected(ProductEntity productEntity) {

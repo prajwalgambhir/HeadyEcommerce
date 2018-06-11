@@ -28,13 +28,16 @@ public class ProductAdapter<T> extends RecyclerView.Adapter<ProductAdapter.MView
     class MViewHolder<Random> extends RecyclerView.ViewHolder {
 
         private T t;
-        private TextView tvProdName;
+        private TextView tvProdName, tvViews, tvOrdered, tvShared;
         private TableLayout tlVariants;
 
         public MViewHolder(View itemView) {
             super(itemView);
             tvProdName = itemView.findViewById(R.id.tvProdName);
             tlVariants = itemView.findViewById(R.id.tlVariants);
+            tvViews = itemView.findViewById(R.id.tvViews);
+            tvOrdered = itemView.findViewById(R.id.tvOrdered);
+            tvShared = itemView.findViewById(R.id.tvShared);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -47,6 +50,12 @@ public class ProductAdapter<T> extends RecyclerView.Adapter<ProductAdapter.MView
             this.t = t;
             ProductEntity pe = (ProductEntity) t;
             tvProdName.setText(pe.getName());
+            long views = pe.getViewCount() != null ? pe.getViewCount() : 0;
+            long orders = pe.getOrderCount() != null ? pe.getOrderCount() : 0;
+            long shares = pe.getShareCount() != null ? pe.getShareCount() : 0;
+            tvViews.setText("Views:" + views);
+            tvOrdered.setText("Ordered:" + orders);
+            tvShared.setText("Shared:" + shares);
             TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams
                     .WRAP_CONTENT, 1f);
             if (tlVariants.getChildCount() == 1) {

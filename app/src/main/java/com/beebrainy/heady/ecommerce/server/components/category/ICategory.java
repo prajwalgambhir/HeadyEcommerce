@@ -4,8 +4,6 @@ import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 
 import java.util.List;
 
-import io.realm.RealmList;
-
 public interface ICategory {
 
     void addCategory(CategoryEntity categoryEntity);
@@ -16,7 +14,7 @@ public interface ICategory {
 
     CategoryEntity getCategory(long id);
 
-    RealmList<CategoryEntity> getMainCategories();
+    List<CategoryEntity> getMainCategories();
 
     List<CategoryEntity> getSubCategory(long pCategoryId);
 

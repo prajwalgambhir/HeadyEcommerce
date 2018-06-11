@@ -41,13 +41,11 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
             try {
                 JSONObject jo = new JSONObject(str);
                 JSONArray jaCategories = jo.getJSONArray("categories");
-                JSONArray jaRankings = jo.getJSONArray("rankings");
+                //Add Main categories
                 for (int i = 0; i < jaCategories.length(); i++) {
                     JSONObject joCategory = jaCategories.getJSONObject(i);
                     CategoryEntity categoryEntity = categoryFromJson(joCategory);
-
                     JSONArray jaProducts = joCategory.getJSONArray("products");
-                    JSONArray jaChildCategory = joCategory.getJSONArray("child_categories");
                     if (jaProducts.length() > 0) {
                         RealmList<ProductEntity> prods = new RealmList<>();
                         for (int j = 0; j < jaProducts.length(); j++) {
@@ -68,10 +66,20 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
                         categoryEntity.setProductEntities(prods);
                     }
                     addCategory(categoryEntity);
+                }
+
+                //add sub categories
+                for (int i = 0; i < jaCategories.length(); i++) {
+                    JSONObject joCategory = jaCategories.getJSONObject(i);
+                    CategoryEntity categoryEntity = categoryFromJson(joCategory);
+                    JSONArray jaChildCategory = joCategory.getJSONArray("child_categories");
                     if (jaChildCategory.length() > 0) {
                         addChildCategory(categoryEntity.getId(), jaChildCategory);
                     }
                 }
+
+                //Add rankings
+                JSONArray jaRankings = jo.getJSONArray("rankings");
                 for (int r = 0; r < jaRankings.length(); r++) {
                     RankingEntity rankingEntity = new RankingEntity();
                     rankingEntity.setId(r);

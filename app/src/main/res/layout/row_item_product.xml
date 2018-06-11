@@ -15,6 +15,7 @@
     <TableLayout
         android:layout_below="@id/tvProdName"
         android:id="@+id/tlVariants"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content">
@@ -45,4 +46,34 @@
         </TableRow>
     </TableLayout>
 
+    <LinearLayout
+        android:layout_below="@id/tlVariants"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvViews"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvOrdered"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvShared"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TextView>
+    </LinearLayout>
 </RelativeLayout>

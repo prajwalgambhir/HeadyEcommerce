@@ -26,7 +26,7 @@ public class Repo implements IRepo {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<CategoryEntity> query = realm.where(CategoryEntity.class);
         for (Long id : ids) {
-            query.equalTo("id", id);
+            query.equalTo("id", id).or();
         }
         RealmResults<CategoryEntity> realmResults = query.findAll();
         return realmResults;
@@ -35,7 +35,8 @@ public class Repo implements IRepo {
     @Override
     public RealmResults<CategoryEntity> getMainCategories() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(CategoryEntity.class).isNotEmpty("subCategories").findAll();
+        return realm.where(CategoryEntity.class).isNotEmpty("subCategories").and().isEmpty
+                ("productEntities").findAll();
     }
 
     public CategoryEntity getCategory(long id) {

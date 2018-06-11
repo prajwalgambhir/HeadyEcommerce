@@ -4,9 +4,8 @@ import com.beebrainy.heady.ecommerce.server.components.repo.IRepo;
 import com.beebrainy.heady.ecommerce.server.components.repo.Repo;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.RealmList;
 
 public class CategoryBO implements ICategory {
 
@@ -36,11 +35,16 @@ public class CategoryBO implements ICategory {
     }
 
     @Override
-    public RealmList<CategoryEntity> getMainCategories() {
+    public List<CategoryEntity> getMainCategories() {
         IRepo repo = new Repo();
-        RealmList<CategoryEntity> mainCategories = new RealmList<>();
-        mainCategories.addAll(repo.getMainCategories());
-        return mainCategories;
+        List<CategoryEntity> mainCategories = new ArrayList<>(repo.getMainCategories());
+        List<CategoryEntity> temp = new ArrayList<>(mainCategories);
+        for (CategoryEntity ce : mainCategories) {
+            for (CategoryEntity sub : ce.getSubCategories()) {
+                temp.remove(sub);
+            }
+        }
+        return temp;
     }
 
     @Override
