@@ -9,21 +9,30 @@ import android.widget.Button;
 
 import com.beebrainy.heady.ecommerce.R;
 import com.beebrainy.heady.ecommerce.client.service.StorageService;
-import com.beebrainy.heady.ecommerce.server.components.database.DatabaseDownloaderBO;
 import com.beebrainy.heady.ecommerce.server.components.database.IDatabaseDownloader;
+import com.beebrainy.heady.ecommerce.server.components.database.di.DBDownloaderComponent;
+import com.beebrainy.heady.ecommerce.server.components.database.di.DaggerDBDownloaderComponent;
 
-import static com.beebrainy.heady.ecommerce.server.components.database.IDatabaseDownloader.DB_LOADED;
+import javax.inject.Inject;
+
+import static com.beebrainy.heady.ecommerce.server.components.database.IDatabaseDownloader
+        .DB_LOADED;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Button btnCat, btnRanking;
+    private Button btnCat, btnRanking;
+    private DBDownloaderComponent component;
+    @Inject
+    IDatabaseDownloader iDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initDB();
+        component = DaggerDBDownloaderComponent.builder().build();
+        component.inject(this);
         initView();
+        initDB();
     }
 
     private void initView() {
@@ -36,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initDB() {
         StorageService storageService = new StorageService(this);
         if (!storageService.getBoolean(DB_LOADED) || true) {
-            IDatabaseDownloader iDb = new DatabaseDownloaderBO();
             iDb.clearDb(this);
             Log.d(MainActivity.class.getSimpleName(), "Downloading DB");
             iDb.downloadDatabase(this);

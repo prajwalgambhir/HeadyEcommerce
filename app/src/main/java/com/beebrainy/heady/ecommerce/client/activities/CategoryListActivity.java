@@ -10,17 +10,19 @@ import android.support.v7.widget.RecyclerView;
 import com.beebrainy.heady.ecommerce.R;
 import com.beebrainy.heady.ecommerce.client.adapters.CategoryAdapter;
 import com.beebrainy.heady.ecommerce.client.listeners.ItemClickListener;
-import com.beebrainy.heady.ecommerce.server.components.category.CategoryBO;
 import com.beebrainy.heady.ecommerce.server.components.category.ICategory;
+import com.beebrainy.heady.ecommerce.server.components.category.di.CategoryComponent;
+import com.beebrainy.heady.ecommerce.server.components.category.di.DaggerCategoryComponent;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class CategoryListActivity extends AppCompatActivity {
 
     private static final String KEY_MAIN_CAT_ID = "KEY_MAIN_CAT_ID";
-    private static final String KEY_SUB_CAT_ID = "KEY_SUB_CAT_ID";
     public static final String KEY_CAT_ID = "KEY_CAT_ID";
     private boolean IS_MAIN_CAT = true;
 
@@ -34,17 +36,22 @@ public class CategoryListActivity extends AppCompatActivity {
         }
     };
 
+    private CategoryComponent categoryComponent;
+    @Inject
+    ICategory category;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_list);
         IS_MAIN_CAT = !getIntent().hasExtra(KEY_MAIN_CAT_ID);
+        categoryComponent = DaggerCategoryComponent.builder().build();
+        categoryComponent.inject(this);
         getCategories();
         initView();
     }
 
     private void getCategories() {
-        ICategory category = new CategoryBO();
         if (IS_MAIN_CAT) {
             categoryEntityList.addAll(category.getMainCategories());
         } else {
