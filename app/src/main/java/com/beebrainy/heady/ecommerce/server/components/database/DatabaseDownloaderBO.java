@@ -4,20 +4,18 @@ import android.content.Context;
 import android.util.Log;
 
 import com.beebrainy.heady.ecommerce.client.service.StorageService;
-import com.beebrainy.heady.ecommerce.server.components.category.CategoryBO;
 import com.beebrainy.heady.ecommerce.server.components.category.ICategory;
-import com.beebrainy.heady.ecommerce.server.components.category.di.CategoryComponent;
+import com.beebrainy.heady.ecommerce.server.components.database.di.DBDownloaderComponent;
+import com.beebrainy.heady.ecommerce.server.components.database.di.DaggerDBDownloaderComponent;
 import com.beebrainy.heady.ecommerce.server.components.ranking.IRanking;
-import com.beebrainy.heady.ecommerce.server.components.ranking.RankingBO;
+import com.beebrainy.heady.ecommerce.server.components.repo.IRepo;
+import com.beebrainy.heady.ecommerce.server.contracts.CallbackResponse;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 import com.beebrainy.heady.ecommerce.server.models.ProductEntity;
 import com.beebrainy.heady.ecommerce.server.models.RankingEntity;
 import com.beebrainy.heady.ecommerce.server.models.TaxEntity;
 import com.beebrainy.heady.ecommerce.server.models.VariantEntity;
-import com.beebrainy.heady.ecommerce.server.services.network.CallbackResponse;
 import com.beebrainy.heady.ecommerce.server.services.network.INetworkService;
-import com.beebrainy.heady.ecommerce.server.services.network.di.DaggerNetworkServiceComponent;
-import com.beebrainy.heady.ecommerce.server.services.network.di.NetworkServiceComponent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,21 +30,25 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 
 public class DatabaseDownloaderBO implements IDatabaseDownloader {
 
     private Context context;
-    private NetworkServiceComponent nServiceComponent;
+    private DBDownloaderComponent component;
     @Inject
     INetworkService iNetworkService;
-
-    private CategoryComponent categoryComponent;
     @Inject
     ICategory category;
+    @Inject
+    IRanking ranking;
+    @Inject
+    IRepo repo;
 
-    private CallbackResponse callbackResponse = new CallbackResponse<String>() {
+    private CallbackResponse<Boolean> callbackResponse;
+
+    //Handles parsing of the database in JSON String
+    private CallbackResponse nwCallbackResponse = new CallbackResponse<String>() {
         @Override
         public void onResponse(String str) {
             try {
@@ -97,47 +99,46 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
                     rankingEntity.setTitle(jaRankings.getJSONObject(r).getString("ranking"));
                     addRanking(rankingEntity, jaRankings.getJSONObject(r).getJSONArray("products"));
                 }
+
+                callbackResponse.onResponse(true);
             } catch (JSONException e) {
                 StorageService storageService = new StorageService(context);
-                storageService.putBoolean(IDatabaseDownloader.DB_LOADED, false);
+                storageService.putBoolean(IDatabaseDownloader.KEY_DB_LOADED, false);
+                callbackResponse.onResponse(false);
                 e.printStackTrace();
                 return;
             } catch (ParseException e) {
                 StorageService storageService = new StorageService(context);
-                storageService.putBoolean(IDatabaseDownloader.DB_LOADED, false);
+                storageService.putBoolean(IDatabaseDownloader.KEY_DB_LOADED, false);
+                callbackResponse.onResponse(false);
                 e.printStackTrace();
+                return;
             }
             StorageService storageService = new StorageService(context);
-            storageService.putBoolean(IDatabaseDownloader.DB_LOADED, true);
+            storageService.putBoolean(IDatabaseDownloader.KEY_DB_LOADED, true);
         }
     };
 
     public DatabaseDownloaderBO() {
-        nServiceComponent = DaggerNetworkServiceComponent.builder().build();
-        nServiceComponent.inject(this);
-        categoryComponent = DaggerCategoryComponent.builder().build();
-        categoryComponent.inject(this);
+        component = DaggerDBDownloaderComponent.builder().build();
+        component.inject(this);
     }
 
     @Override
-    public void downloadDatabase(final Context context) {
+    public void downloadDatabase(final Context context, CallbackResponse<Boolean>
+            callbackResponse) {
         Log.d(DatabaseDownloaderBO.class.getSimpleName(), "Inside constructor");
         this.context = context;
-        iNetworkService.getRequest(JSON_URL, callbackResponse);
+        this.callbackResponse = callbackResponse;
+        iNetworkService.getRequest(JSON_URL, nwCallbackResponse);
     }
 
     @Override
-    public void clearDb(Context context) {
-        Realm.init(context);
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
-        realm.close();
+    public void clearDb() {
+        repo.clearDB();
     }
 
     private void addCategory(CategoryEntity categoryEntity) {
-//        category = new CategoryBO();
         category.addCategory(categoryEntity);
     }
 
@@ -146,12 +147,10 @@ public class DatabaseDownloaderBO implements IDatabaseDownloader {
         for (int i = 0; i < jaChildIds.length(); i++) {
             childIds.add(jaChildIds.getLong(i));
         }
-        ICategory category = new CategoryBO();
         category.addSubCategory(parentId, childIds);
     }
 
     private void addRanking(RankingEntity rankingEntity, JSONArray products) throws JSONException {
-        IRanking ranking = new RankingBO();
         Map<Long, Long> mapProductIdCount = new HashMap<>(products.length());
         String title = rankingEntity.getTitle();
         String countTitle = "";

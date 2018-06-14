@@ -15,16 +15,16 @@ import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryAdapter<T> extends RecyclerView.Adapter<CategoryAdapter.MViewHolder> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MViewHolder> {
 
     private Context context;
     private List<CategoryEntity> completeItem = new ArrayList<>();
-    private ItemClickListener<T> itemClickListener;
+    private ItemClickListener<CategoryEntity> itemClickListener;
 
-    class MViewHolder<Random> extends RecyclerView.ViewHolder {
+    class MViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvItem;
-        private T t;
+        private CategoryEntity ce;
 
         public MViewHolder(View itemView) {
             super(itemView);
@@ -32,7 +32,7 @@ public class CategoryAdapter<T> extends RecyclerView.Adapter<CategoryAdapter.MVi
             tvItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    itemClickListener.onItemClick(t);
+                    itemClickListener.onItemClick(ce);
                 }
             });
         }
@@ -41,8 +41,8 @@ public class CategoryAdapter<T> extends RecyclerView.Adapter<CategoryAdapter.MVi
             tvItem.setText(name);
         }
 
-        public void setItem(T t) {
-            this.t = t;
+        public void setItem(CategoryEntity ce) {
+            this.ce = ce;
         }
     }
 
@@ -65,7 +65,7 @@ public class CategoryAdapter<T> extends RecyclerView.Adapter<CategoryAdapter.MVi
     @Override
     public void onBindViewHolder(@NonNull MViewHolder holder, int position) {
         holder.setItemName(completeItem.get(position).getName());
-        holder.setItem((T) completeItem.get(position));
+        holder.setItem(completeItem.get(position));
     }
 
     @Override

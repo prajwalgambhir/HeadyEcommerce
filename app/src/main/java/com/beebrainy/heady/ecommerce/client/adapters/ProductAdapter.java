@@ -18,16 +18,15 @@ import com.beebrainy.heady.ecommerce.server.models.VariantEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductAdapter<T> extends RecyclerView.Adapter<ProductAdapter.MViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MViewHolder> {
 
     private Context context;
-
     private List<ProductEntity> completeItem = new ArrayList<>();
-    private ItemClickListener<T> listener;
+    private ItemClickListener<ProductEntity> listener;
 
-    class MViewHolder<Random> extends RecyclerView.ViewHolder {
+    class MViewHolder extends RecyclerView.ViewHolder {
 
-        private T t;
+        private ProductEntity t;
         private TextView tvProdName, tvViews, tvOrdered, tvShared;
         private TableLayout tlVariants;
 
@@ -46,20 +45,19 @@ public class ProductAdapter<T> extends RecyclerView.Adapter<ProductAdapter.MView
             });
         }
 
-        public void initView(T t) {
+        public void initView(ProductEntity t) {
             this.t = t;
-            ProductEntity pe = (ProductEntity) t;
-            tvProdName.setText(pe.getName());
-            long views = pe.getViewCount() != null ? pe.getViewCount() : 0;
-            long orders = pe.getOrderCount() != null ? pe.getOrderCount() : 0;
-            long shares = pe.getShareCount() != null ? pe.getShareCount() : 0;
+            tvProdName.setText(t.getName());
+            long views = t.getViewCount() != null ? t.getViewCount() : 0;
+            long orders = t.getOrderCount() != null ? t.getOrderCount() : 0;
+            long shares = t.getShareCount() != null ? t.getShareCount() : 0;
             tvViews.setText("Views:" + views);
             tvOrdered.setText("Ordered:" + orders);
             tvShared.setText("Shared:" + shares);
             TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams
                     .WRAP_CONTENT, 1f);
             if (tlVariants.getChildCount() == 1) {
-                for (VariantEntity ve : pe.getVariantEntities()) {
+                for (VariantEntity ve : t.getVariantEntities()) {
                     TableRow tr = new TableRow(context);
                     tr.setLayoutParams(new TableLayout.LayoutParams(TableRow.LayoutParams
                             .MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -74,7 +72,7 @@ public class ProductAdapter<T> extends RecyclerView.Adapter<ProductAdapter.MView
                     tvColor.setText(ve.getColor() != null ? ve.getColor() : "N/A");
                     tvSize.setText(ve.getSize() != null ? ve.getSize().toString() : "N/A");
                     tvPrice.setText(ve.getPrice() != null ? ve.getPrice().toString() : "N/A");
-                    tvTax.setText(pe.getTaxEntity().getValue().toString());
+                    tvTax.setText(t.getTaxEntity().getValue().toString() + "%");
                     tr.addView(tvColor);
                     tr.addView(tvSize);
                     tr.addView(tvPrice);
@@ -102,7 +100,7 @@ public class ProductAdapter<T> extends RecyclerView.Adapter<ProductAdapter.MView
 
     @Override
     public void onBindViewHolder(@NonNull MViewHolder holder, int position) {
-        holder.initView((T) completeItem.get(position));
+        holder.initView(completeItem.get(position));
     }
 
 

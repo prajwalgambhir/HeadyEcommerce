@@ -1,42 +1,65 @@
 package com.beebrainy.heady.ecommerce.server.components.category;
 
+import android.util.Log;
+
+import com.beebrainy.heady.ecommerce.server.components.category.di.CategoryComponent;
+import com.beebrainy.heady.ecommerce.server.components.category.di.DaggerCategoryComponent;
 import com.beebrainy.heady.ecommerce.server.components.repo.IRepo;
-import com.beebrainy.heady.ecommerce.server.components.repo.Repo;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class CategoryBO implements ICategory {
+
+    private CategoryComponent component;
+    @Inject
+    IRepo repo;
+
+    public CategoryBO() {
+        component = DaggerCategoryComponent.builder().build();
+        component.inject(this);
+        Log.d("LOG", "Inside CategoryBO constructor");
+        Log.d("LOG", repo.toString());
+    }
 
     @Override
     public void addCategory(CategoryEntity categoryEntity) {
-        IRepo repo = new Repo();
+        if (categoryEntity == null) {
+            throw new IllegalArgumentException("Category cannot be null");
+        }
+        if (categoryEntity.getId() < 0) {
+            throw new IllegalStateException("Category id cannot be less than 0");
+        }
         repo.addCategory(categoryEntity);
     }
 
     @Override
     public void addSubCategory(long parentId, List<Long> childIds) {
-        IRepo repo = new Repo();
+        if (parentId < 0) {
+            throw new IllegalArgumentException("Invalid category id supplied");
+        }
+        if (childIds == null) {
+            throw new IllegalArgumentException("Child Ids cannot be null");
+        }
         List<CategoryEntity> dupSubCategories = repo.getCategories(childIds);
         repo.addChildCategory(parentId, dupSubCategories);
     }
 
     @Override
     public List<CategoryEntity> getCategories() {
-        IRepo repo = new Repo();
         return repo.getCategories();
     }
 
     @Override
     public CategoryEntity getCategory(long id) {
-        IRepo repo = new Repo();
         return repo.getCategory(id);
     }
 
     @Override
     public List<CategoryEntity> getMainCategories() {
-        IRepo repo = new Repo();
         List<CategoryEntity> mainCategories = new ArrayList<>(repo.getMainCategories());
         List<CategoryEntity> temp = new ArrayList<>(mainCategories);
         for (CategoryEntity ce : mainCategories) {
@@ -49,13 +72,11 @@ public class CategoryBO implements ICategory {
 
     @Override
     public List<CategoryEntity> getSubCategory(long pCategoryId) {
-        IRepo repo = new Repo();
         return repo.getSubCategories(pCategoryId);
     }
 
     @Override
     public void deleteCategory(long id) {
-        IRepo repo = new Repo();
         repo.deleteCategory(id);
     }
 }

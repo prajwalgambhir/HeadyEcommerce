@@ -1,5 +1,7 @@
 package com.beebrainy.heady.ecommerce.server.services.network;
 
+import com.beebrainy.heady.ecommerce.server.contracts.CallbackResponse;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +25,7 @@ public class NetworkServiceBO implements INetworkService {
                     url = new URL(requestUrl);
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    callbackResponse.onResponse(e.getMessage());
                 }
                 try {
                     httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -40,11 +43,11 @@ public class NetworkServiceBO implements INetworkService {
                     callbackResponse.onResponse(result.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
+                    callbackResponse.onResponse(e.getMessage());
                 } finally {
                     httpURLConnection.disconnect();
                 }
             }
         }).start();
-
     }
 }

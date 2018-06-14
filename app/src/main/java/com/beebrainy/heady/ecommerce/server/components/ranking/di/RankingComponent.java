@@ -1,6 +1,6 @@
-package com.beebrainy.heady.ecommerce.server.components.category.di;
+package com.beebrainy.heady.ecommerce.server.components.ranking.di;
 
-import com.beebrainy.heady.ecommerce.server.components.category.CategoryBO;
+import com.beebrainy.heady.ecommerce.server.components.ranking.RankingBO;
 import com.beebrainy.heady.ecommerce.server.components.repo.di.RepoModule;
 
 import dagger.Component;
@@ -11,7 +11,7 @@ import dagger.Component;
  */
 
 @Component(modules = {RepoModule.class})
-public interface CategoryComponent {
+public interface RankingComponent {
 
-    void inject(CategoryBO category);
+    void inject(RankingBO ranking);
 }

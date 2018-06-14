@@ -149,4 +149,17 @@ public class Repo implements IRepo {
         }
         realm.commitTransaction();
     }
+
+    @Override
+    public void clearDB() {
+        Log.d(Repo.class.getSimpleName(), "Clearing DB.");
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.deleteAll();
+                Log.d(Repo.class.getSimpleName(), "Successfully cleared DB.");
+            }
+        });
+    }
 }

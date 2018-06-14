@@ -2,17 +2,16 @@ package com.beebrainy.heady.ecommerce.client.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.beebrainy.heady.ecommerce.R;
+import com.beebrainy.heady.ecommerce.client.activities.di.CLAComponent;
+import com.beebrainy.heady.ecommerce.client.activities.di.DaggerCLAComponent;
 import com.beebrainy.heady.ecommerce.client.adapters.CategoryAdapter;
 import com.beebrainy.heady.ecommerce.client.listeners.ItemClickListener;
 import com.beebrainy.heady.ecommerce.server.components.category.ICategory;
-import com.beebrainy.heady.ecommerce.server.components.category.di.CategoryComponent;
-import com.beebrainy.heady.ecommerce.server.components.category.di.DaggerCategoryComponent;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class CategoryListActivity extends AppCompatActivity {
+public class CategoryListActivity extends BaseActivity {
 
     private static final String KEY_MAIN_CAT_ID = "KEY_MAIN_CAT_ID";
     public static final String KEY_CAT_ID = "KEY_CAT_ID";
@@ -36,7 +35,7 @@ public class CategoryListActivity extends AppCompatActivity {
         }
     };
 
-    private CategoryComponent categoryComponent;
+    private CLAComponent categoryComponent;
     @Inject
     ICategory category;
 
@@ -45,7 +44,7 @@ public class CategoryListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_list);
         IS_MAIN_CAT = !getIntent().hasExtra(KEY_MAIN_CAT_ID);
-        categoryComponent = DaggerCategoryComponent.builder().build();
+        categoryComponent = DaggerCLAComponent.builder().build();
         categoryComponent.inject(this);
         getCategories();
         initView();
@@ -65,8 +64,7 @@ public class CategoryListActivity extends AppCompatActivity {
         RecyclerView.LayoutManager linerLayout = new LinearLayoutManager(this);
         rvCL.setLayoutManager(linerLayout);
         rvCL.setItemAnimator(new DefaultItemAnimator());
-        CategoryAdapter<CategoryEntity> ca = new CategoryAdapter(this, categoryEntityList,
-                listener);
+        CategoryAdapter ca = new CategoryAdapter(this, categoryEntityList, listener);
         rvCL.setAdapter(ca);
     }
 

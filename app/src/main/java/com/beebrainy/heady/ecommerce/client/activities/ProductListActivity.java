@@ -1,32 +1,39 @@
 package com.beebrainy.heady.ecommerce.client.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.beebrainy.heady.ecommerce.R;
+import com.beebrainy.heady.ecommerce.client.activities.di.DaggerPLAComponent;
+import com.beebrainy.heady.ecommerce.client.activities.di.PLAComponent;
 import com.beebrainy.heady.ecommerce.client.adapters.ProductAdapter;
 import com.beebrainy.heady.ecommerce.client.listeners.ItemClickListener;
-import com.beebrainy.heady.ecommerce.server.components.category.CategoryBO;
 import com.beebrainy.heady.ecommerce.server.components.category.ICategory;
 import com.beebrainy.heady.ecommerce.server.components.ranking.IRanking;
-import com.beebrainy.heady.ecommerce.server.components.ranking.RankingBO;
 import com.beebrainy.heady.ecommerce.server.models.CategoryEntity;
 import com.beebrainy.heady.ecommerce.server.models.ProductEntity;
 import com.beebrainy.heady.ecommerce.server.models.RankingEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProductListActivity extends AppCompatActivity {
+import javax.inject.Inject;
 
-    public static final String KEY_PROD_ID = "KEY_PROD_ID";
+public class ProductListActivity extends BaseActivity {
+
     private List<ProductEntity> productEntities = new ArrayList<>();
     private RecyclerView rvPL;
+    private PLAComponent component;
+    @Inject
+    ICategory category;
+    @Inject
+    IRanking ranking;
 
     private ItemClickListener<ProductEntity> listener = new ItemClickListener<ProductEntity>() {
         @Override
@@ -40,6 +47,8 @@ public class ProductListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_list);
         initView();
+        component = DaggerPLAComponent.builder().build();
+        component.inject(this);
         if (getIntent().hasExtra(CategoryListActivity.KEY_CAT_ID)) {
             long catId = getIntent().getLongExtra(CategoryListActivity.KEY_CAT_ID, -1);
             getProductsByCategory(catId);
@@ -53,7 +62,10 @@ public class ProductListActivity extends AppCompatActivity {
         }
         rvPL.setItemAnimator(new DefaultItemAnimator());
         rvPL.setLayoutManager(new LinearLayoutManager(this));
-        ProductAdapter<ProductEntity> pa = new ProductAdapter(this, productEntities, listener);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL);
+        rvPL.addItemDecoration(itemDecoration);
+        ProductAdapter pa = new ProductAdapter(this, productEntities, listener);
         rvPL.setAdapter(pa);
     }
 
@@ -63,7 +75,6 @@ public class ProductListActivity extends AppCompatActivity {
 
     private void getProductsByCategory(long catId) {
         if (catId != -1) {
-            ICategory category = new CategoryBO();
             CategoryEntity ce = category.getCategory(catId);
             productEntities.addAll(ce.getProductEntities());
         }
@@ -71,7 +82,6 @@ public class ProductListActivity extends AppCompatActivity {
 
     private void getProductsByRanking(long rankId) {
         if (rankId != -1) {
-            IRanking ranking = new RankingBO();
             RankingEntity re = ranking.getRankingEntity(rankId);
             productEntities.addAll(re.getProductEntities());
             sortProductsBy(re.getTitle());
@@ -79,7 +89,7 @@ public class ProductListActivity extends AppCompatActivity {
     }
 
     private void sortProductsBy(final String title) {
-        productEntities.sort(new Comparator<ProductEntity>() {
+        Collections.sort(productEntities, new Comparator<ProductEntity>() {
             @Override
             public int compare(ProductEntity o1, ProductEntity o2) {
                 switch (title) {
